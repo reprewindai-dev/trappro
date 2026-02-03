@@ -1,0 +1,25 @@
+═══════════════════════════════════════════════════════════════
+  PUSH TO GITHUB - COPY THESE COMMANDS TO GIT BASH
+═══════════════════════════════════════════════════════════════
+
+STEP 1: Create GitHub repo at https://github.com/new
+        Name: trap-master-pro
+        DON'T initialize with README
+        Click "Create repository"
+
+STEP 2: Copy your repo URL (looks like):
+        https://github.com/YOUR_USERNAME/trap-master-pro.git
+
+STEP 3: Run these commands in Git Bash:
+
+cd "/c/Users/antho/iCloudDrive/Carrousel app/Voloco tutorial/Complete apps_/trap-master-pro-private"
+
+git remote add origin https://github.com/YOUR_USERNAME/trap-master-pro.git
+
+git branch -M main
+
+git push -u origin main
+
+═══════════════════════════════════════════════════════════════
+  REPLACE YOUR_USERNAME WITH YOUR ACTUAL GITHUB USERNAME!
+═══════════════════════════════════════════════════════════════
