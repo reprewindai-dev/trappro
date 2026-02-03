@@ -56,9 +56,9 @@ export class AdvancedPitchCorrector {
     
     // Search range: 80Hz to 1000Hz (typical vocal range)
     const minLag = Math.floor(this.sampleRate / 1000); // ~44 samples at 44.1kHz
-    const maxLag = Math.floor(this.sampleRate / 80); // ~551 samples at 44.1kHz
+    const maxLagRange = Math.floor(this.sampleRate / 80); // ~551 samples at 44.1kHz
     
-    for (let lag = minLag; lag < maxLag && lag < this.windowSize; lag++) {
+    for (let lag = minLag; lag < maxLagRange && lag < this.windowSize; lag++) {
       let sum = 0;
       for (let i = 0; i < this.windowSize - lag; i++) {
         sum += windowed[i] * windowed[i + lag];
@@ -72,7 +72,7 @@ export class AdvancedPitchCorrector {
     }
     
     // Refine pitch using parabolic interpolation
-    if (maxLag > minLag && maxLag < maxLag - 1) {
+    if (maxLag > minLag && maxLag < maxLagRange - 1) {
       const y1 = autocorr[maxLag - 1];
       const y2 = autocorr[maxLag];
       const y3 = autocorr[maxLag + 1];
@@ -81,7 +81,7 @@ export class AdvancedPitchCorrector {
       maxLag += offset;
     }
     
-    if (maxLag < minLag || maxLag > maxLag) return null;
+    if (maxLag < minLag || maxLag > maxLagRange) return null;
     
     const frequency = this.sampleRate / maxLag;
     

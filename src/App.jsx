@@ -29,7 +29,7 @@ export default function App() {
   const timeUpdateIntervalRef = useRef(null);
   const currentSourceRef = useRef(null);
 
-  // Initialize engine
+  // Initialize engine (deferred - browsers may require user interaction for AudioContext)
   useEffect(() => {
     const initEngine = async () => {
       setLoading(true);
@@ -49,15 +49,17 @@ export default function App() {
           });
           setPresetIntents(intents);
         } else {
-          setError('Failed to initialize audio engine');
+          setError('Failed to initialize audio engine. Please refresh the page.');
         }
       } catch (err) {
-        setError(err.message);
+        console.error('Engine initialization error:', err);
+        setError(`Failed to initialize: ${err.message}. Please check browser console.`);
       } finally {
         setLoading(false);
       }
     };
 
+    // Try to initialize immediately
     initEngine();
   }, []);
 
@@ -325,12 +327,62 @@ export default function App() {
     };
   }, []);
 
-  if (loading && !audioLoaded) {
+  if (loading && !audioLoaded && !engine) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-purple-500" />
           <p className="text-gray-400">Initializing audio engine...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show initialization prompt if engine not ready
+  if (!engine && !loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            TrapMasterPro
+          </h1>
+          <p className="text-gray-400 mb-6">
+            Click the button below to initialize the audio engine. Modern browsers require user interaction to enable audio processing.
+          </p>
+          <button
+            onClick={() => {
+              const initEngine = async () => {
+                setLoading(true);
+                try {
+                  const audioEngine = new TrapMasterProEngine();
+                  const initialized = await audioEngine.initialize();
+                  
+                  if (initialized) {
+                    setEngine(audioEngine);
+                    const presetList = audioEngine.getPresets();
+                    setPresets(presetList);
+                    
+                    // Get intents for all presets
+                    const intents = {};
+                    presetList.forEach(preset => {
+                      intents[preset] = audioEngine.getPresetIntent(preset);
+                    });
+                    setPresetIntents(intents);
+                  } else {
+                    setError('Failed to initialize audio engine');
+                  }
+                } catch (err) {
+                  setError(err.message);
+                } finally {
+                  setLoading(false);
+                }
+              };
+              initEngine();
+            }}
+            className="px-8 py-4 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium transition-all shadow-lg shadow-purple-500/30"
+          >
+            Initialize Audio Engine
+          </button>
         </div>
       </div>
     );
