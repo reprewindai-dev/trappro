@@ -14,7 +14,7 @@ set /p GITHUB_USER="GitHub Username: "
 echo.
 echo STEP 3: Adding remote and pushing...
 echo.
-cd /d "%~dp0"
+cd /d "C:\Users\antho\Documents\trap-master-pro-private"
 git remote remove origin 2>nul
 git remote add origin https://github.com/%GITHUB_USER%/trap-master-pro.git
 git branch -M main
